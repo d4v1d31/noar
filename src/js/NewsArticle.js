@@ -32,6 +32,7 @@ export class NewsArticleEntry extends React.Component{
 
     render(){
         let classes = "mdl-list__item mdl-list__item--three-line";
+        if(this.props.hadRead) classes += " read";
         return(
             <li onClick={(e) => this.handleClick(e)}
                 className={this.props.isActive ? classes + " active" : classes}>
@@ -61,6 +62,7 @@ export class NewsArticleList extends React.Component{
                                       title={entry.title}
                                       teaser={entry.teaser}
                                       updated={entry.updated}
+                                      hadRead = {entry.read}
                                       isActive={entry === this.props.currentArticle}
                                       handleArticleChange={this.props.handleArticleChange(entry)}/>)}
             </ul>

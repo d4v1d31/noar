@@ -37,9 +37,15 @@ export class Body extends React.Component{
 
 
     handleArticleChange(article) {
-        return (e) => this.setState({
-            currentArticle: article
-        })
+        return (e) => {
+            article.read = true;
+            this.props.store.readNewsArticle(article.id).then(()=>{
+                this.setState({
+                    currentArticle: article
+                })
+            })
+
+        }
     }
 
     render(){

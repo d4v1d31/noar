@@ -7,9 +7,10 @@ import Dexie from 'dexie';
 export class DataStorage {
     VERSION = 1;
     constructor(){
-        this.db = new Dexie("noar12");
+        this.db = new Dexie("noar13");
+
         this.db.version(this.VERSION).stores({
-            articles: 'id, title, summary, updated, content, sourceId',
+            articles: 'id, title, summary, updated, content, sourceId, read',
             newsSources: 'id, title, feed_title, url'
         });
     }
@@ -30,8 +31,13 @@ export class DataStorage {
             'summary': article.summary,
             'updated': article.updated,
             'content': article.content,
-            'sourceId': article.sourceId
+            'sourceId': article.sourceId,
+            'read': false
         });
+    }
+
+    readNewsArticle(id){
+        return this.db.articles.update(id, {read: true});
     }
 
     getNewsSources(){

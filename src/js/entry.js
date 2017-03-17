@@ -16,7 +16,7 @@ import {Loader} from "./Loader";
 let store = new DataStorage();
 
 let loader = new Loader(store);
-loader.loadFeed('heise online', 'https://www.heise.de/newsticker/heise-atom.xml');
+//loader.loadFeed('heise online', 'https://www.heise.de/newsticker/heise-atom.xml');
 //loader.loadFeed('Golem', 'https://rss.golem.de/rss.php?feed=ATOM1.0');
 
 // fill db with example data
