@@ -4,6 +4,7 @@
 import * as React from "react";
 import {NewsSourceEntryList} from './NewsSource';
 import {NewsArticleList, NewsArticle} from './NewsArticle';
+import {AddSourceDlg} from './Dialogs';
 
 export class Body extends React.Component{
     constructor(props) {
@@ -81,6 +82,7 @@ export class Body extends React.Component{
                     className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
                 <i className="material-icons">navigate_next</i>
             </button>
+
         </div>
         )
     }

@@ -1,4 +1,5 @@
 import * as React from "react";
+import {AddSourceDlg} from "./Dialogs";
 
 export class NewsSourceEntry extends React.Component {
     constructor(props) {
@@ -49,7 +50,8 @@ export class NewsSourceEntryList extends React.Component {
                                      isActive={entry === this.props.currentEntry}
                                      handleNewsSourceChange = {this.props.handleNewsSourceChange(entry)}/>)}
                 <div className="mdl-layout-spacer"></div>
-                <a className="mdl-navigation__link" onClick={(e) => this.addEntry(e)}>Add</a>
+                <a className="mdl-navigation__link" onClick={(e) => document.getElementById("addSourceDlg").showModal()}>Add</a>
+                <AddSourceDlg/>
             </nav>
         )
     }

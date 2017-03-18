@@ -2,6 +2,7 @@
  * Created by david on 08.03.17.
  */
 require('../css/main.less');
+require('../../node_modules/material-design-lite/material.js');
 
 'use strict';
 import ReactDOM from 'react-dom';
@@ -51,6 +52,8 @@ let loader = new Loader(store);
                       store={store}/>,
                 document.querySelector("#root")
             );
+            componentHandler.upgradeElement(document.getElementById('addSourceTitle'));
+            componentHandler.upgradeElement(document.getElementById('addSourceUrl'));
         })
     });
 
