@@ -3,6 +3,13 @@ import * as React from "react";
 export class AddSourceDlg extends React.Component {
     constructor(props) {
         super(props);
+        this.onAdd = this.onAdd.bind(this);
+    }
+
+    onAdd(e){
+        let title = document.getElementById('source-title').value;
+        let url = document.getElementById('source-url').value;
+        this.props.loader.loadFeed(title, url);
     }
 
     render(){
@@ -39,7 +46,7 @@ export class AddSourceDlg extends React.Component {
                 </form>
             </div>
             <div className="mdl-dialog__actions">
-                <button type="button" className="mdl-button" >add</button>
+                <button type="button" className="mdl-button" onClick={this.onAdd}>add</button>
                 <button type="button" className="mdl-button close" onClick={(e)=> document.getElementById("addSourceDlg").close()}>close</button>
             </div>
         </dialog>)

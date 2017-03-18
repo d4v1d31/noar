@@ -82,7 +82,7 @@ export class Body extends React.Component{
                     className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
                 <i className="material-icons">navigate_next</i>
             </button>
-
+            <AddSourceDlg loader={this.props.loader}/>
         </div>
         )
     }

@@ -7,7 +7,7 @@ import Dexie from 'dexie';
 export class DataStorage {
     VERSION = 1;
     constructor(){
-        this.db = new Dexie("noar13");
+        this.db = new Dexie("noar14");
 
         this.db.version(this.VERSION).stores({
             articles: 'id, title, summary, updated, content, sourceId, read',
@@ -25,14 +25,27 @@ export class DataStorage {
     }
 
     addNewsArticle(article){
-        return this.db.articles.put({
-            'id': article.id,
-            'title': article.title,
-            'summary': article.summary,
-            'updated': article.updated,
-            'content': article.content,
-            'sourceId': article.sourceId,
-            'read': false
+        return this.db.article.get(article.id, a => {
+            if(a) {
+                return this.db.articles.update(a.id, {
+                    'id': article.id,
+                    'title': article.title,
+                    'summary': article.summary,
+                    'updated': article.updated,
+                    'content': article.content,
+                    'sourceId': article.sourceId
+                })
+            } else {
+                return this.db.articles.put({
+                    'id': article.id,
+                    'title': article.title,
+                    'summary': article.summary,
+                    'updated': article.updated,
+                    'content': article.content,
+                    'sourceId': article.sourceId,
+                    'read': false
+                })
+            }
         });
     }
 

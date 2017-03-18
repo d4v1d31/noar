@@ -30,6 +30,14 @@ let loader = new Loader(store);
     })
 }*/
 
+function runload() {
+    loader.loadFeed('Golem', 'https://rss.golem.de/rss.php?feed=ATOM1.0');
+    alert("load")
+}
+
+runload();
+setInterval(runload, 5*60*1000);
+
 
 
 
@@ -49,7 +57,9 @@ let loader = new Loader(store);
                       currentSource   = {currentSource}
                       currentArticles = {currentArticles}
                       currentArticle  = {currentArticles[0]}
-                      store={store}/>,
+                      store           = {store}
+                      loader          = {loader}
+                />,
                 document.querySelector("#root")
             );
             componentHandler.upgradeElement(document.getElementById('addSourceTitle'));

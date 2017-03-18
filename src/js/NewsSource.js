@@ -33,6 +33,7 @@ export class NewsSourceEntryList extends React.Component {
 
     addEntry(e) {
         e.preventDefault();
+        document.getElementById("addSourceDlg").showModal()
         this.setState(prevState => ({
             entries: prevState.entries.concat({name: "Heise Online", url: "heise.de", id: this.n})
         }));
@@ -50,8 +51,7 @@ export class NewsSourceEntryList extends React.Component {
                                      isActive={entry === this.props.currentEntry}
                                      handleNewsSourceChange = {this.props.handleNewsSourceChange(entry)}/>)}
                 <div className="mdl-layout-spacer"></div>
-                <a className="mdl-navigation__link" onClick={(e) => document.getElementById("addSourceDlg").showModal()}>Add</a>
-                <AddSourceDlg/>
+                <a className="mdl-navigation__link" onClick={this.addEntry}>Add</a>
             </nav>
         )
     }
