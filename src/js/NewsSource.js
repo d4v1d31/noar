@@ -1,5 +1,4 @@
-import * as React from "react";
-import {AddSourceDlg} from "./Dialogs";
+import React from "react";
 
 export class NewsSourceEntry extends React.Component {
     constructor(props) {
@@ -27,7 +26,6 @@ export class NewsSourceEntry extends React.Component {
 export class NewsSourceEntryList extends React.Component {
     constructor(props){
         super(props);
-        this.n = 0;
         this.addEntry = this.addEntry.bind(this);
     }
 

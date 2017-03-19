@@ -1,15 +1,11 @@
 /**
  * Created by david on 09.03.17.
  */
-import * as React from "react";
-let $ = require('jquery');
+import React from "react";
 
 export class NewsArticle extends React.Component{
     constructor(props) {
         super(props);
-
-
-
     }
 
     render(){
@@ -43,7 +39,6 @@ export class NewsArticleEntry extends React.Component{
     }
 
     render(){
-
         let classes = "mdl-list__item mdl-list__item--three-line";
         if(this.props.hadRead) classes += " read";
         return(

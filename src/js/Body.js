@@ -1,7 +1,7 @@
 /**
  * Created by david on 10.03.17.
  */
-import * as React from "react";
+import React from "react";
 import {NewsSourceEntryList} from './NewsSource';
 import {NewsArticleList, NewsArticle} from './NewsArticle';
 import {AddSourceDlg} from './Dialogs';
@@ -18,7 +18,6 @@ export class Body extends React.Component{
             currentArticles: props.currentArticles,
             currentArticle: props.currentArticle,
         };
-
 
         this.handleNewsSourceChange = this.handleNewsSourceChange.bind(this);
         this.loadNewsSource = this.loadNewsSource.bind(this);
@@ -44,7 +43,6 @@ export class Body extends React.Component{
 
     }
 
-
     handleArticleChange(article){
         return (e) => {
             article.read = true;
@@ -65,7 +63,6 @@ export class Body extends React.Component{
             this.props.store.readNewsArticle(currentArticle.id).then(()=>{
                 currentArticle.read = true;
                 this.setState({currentArticle: currentArticle});
-                //console.log('next');
             })
         }
     }
@@ -78,7 +75,6 @@ export class Body extends React.Component{
             this.props.store.readNewsArticle(currentArticle.id).then(()=>{
                 currentArticle.read = true;
                 this.setState({currentArticle: currentArticle});
-                //console.log('previous');
             })
         }
 
@@ -97,7 +93,6 @@ export class Body extends React.Component{
 
     render(){
         let article = this.state.currentArticle;
-        //console.log(article.content);
         return (
         <div onKeyPress={this.state.onKeyPress} className="mdl-layout mdl-js-layout mdl-layout--fixed-drawer">
             <aside className="mdl-layout__drawer">

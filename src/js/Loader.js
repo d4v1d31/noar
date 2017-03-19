@@ -113,7 +113,6 @@ export class Loader {
         $.get(id, (data) => {
 
             data = $($.parseHTML($.trim(data)));
-            //console.log($(data));
             let title = data.find("h1").text();
             let content = [];
             data.find('p, h2').each(function () { // or "item" or whatever suits your feed

@@ -7,7 +7,6 @@ require('../../node_modules/material-design-lite/material.js');
 'use strict';
 import ReactDOM from 'react-dom';
 import React from 'react';
-import {data} from './ExampleData'; // load example data
 import {Body} from './Body';
 import {DataStorage} from './Storage';
 import {Loader} from "./Loader";
@@ -17,24 +16,13 @@ import {Loader} from "./Loader";
 let store = new DataStorage();
 
 let loader = new Loader(store);
+// load example data
 loader.loadFeed('heise online', 'https://www.heise.de/newsticker/heise-atom.xml');
 loader.loadFeed('Golem', 'https://rss.golem.de/rss.php?feed=ATOM1.0');
-
-// fill db with example data
-/*for(let source of data.news){
-    store.addNewsSource(source).then((id) =>{
-        for (let article of source.articles){
-            article.sourceId = id;
-            store.addNewsArticle(article);
-        }
-    })
-}*/
 
 
 loader.updateFeeds();
 setInterval(loader.updateFeeds, 5*60*1000);
-
-
 
 
 // load sources
@@ -61,6 +49,7 @@ setInterval(loader.updateFeeds, 5*60*1000);
             componentHandler.upgradeElement(document.getElementById('addSourceTitle'));
             componentHandler.upgradeElement(document.getElementById('addSourceUrl'));
         })
-    });
+    }
+);
 
 

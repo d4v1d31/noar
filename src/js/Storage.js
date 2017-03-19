@@ -1,7 +1,6 @@
 /**
  * Created by david on 10.03.17.
  */
-import {data} from './ExampleData';
 import Dexie from 'dexie';
 
 export class DataStorage {
