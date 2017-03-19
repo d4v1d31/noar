@@ -19,7 +19,7 @@ module.exports = {
             { test: /\.jsx?$/,
               loader: 'babel-loader',
               exclude: /node_modules/,
-              query: {presets: ["es2015", "stage-0", "react"]}},
+              query: {presets: ["es2015", "stage-0", "react"], "plugins": ["transform-decorators-legacy"]}},
             { test: /\.css$/, loader: 'style-loader!css-loader' },
             { test: /\.less$/, loader: 'style-loader!css-loader!less-loader'}
         ]

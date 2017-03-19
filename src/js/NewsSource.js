@@ -33,11 +33,7 @@ export class NewsSourceEntryList extends React.Component {
 
     addEntry(e) {
         e.preventDefault();
-        document.getElementById("addSourceDlg").showModal()
-        this.setState(prevState => ({
-            entries: prevState.entries.concat({name: "Heise Online", url: "heise.de", id: this.n})
-        }));
-        this.n += 1;
+        document.getElementById("addSourceDlg").showModal();
     }
 
 

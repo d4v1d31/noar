@@ -7,7 +7,7 @@ import Dexie from 'dexie';
 export class DataStorage {
     VERSION = 1;
     constructor(){
-        this.db = new Dexie("noar14");
+        this.db = new Dexie("noar24");
 
         this.db.version(this.VERSION).stores({
             articles: 'id, title, summary, updated, content, sourceId, read',
@@ -25,7 +25,7 @@ export class DataStorage {
     }
 
     addNewsArticle(article){
-        return this.db.article.get(article.id, a => {
+        return this.db.articles.get(article.id, a => {
             if(a) {
                 return this.db.articles.update(a.id, {
                     'id': article.id,
@@ -58,7 +58,7 @@ export class DataStorage {
     }
 
     getArticles(sourceId){
-        return(this.db.articles.where('sourceId').equals(sourceId).toArray())
+        return(this.db.articles.where('sourceId').equals(sourceId).reverse().sortBy('updated'))
     }
 
 

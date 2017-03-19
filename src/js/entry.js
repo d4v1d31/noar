@@ -17,8 +17,8 @@ import {Loader} from "./Loader";
 let store = new DataStorage();
 
 let loader = new Loader(store);
-//loader.loadFeed('heise online', 'https://www.heise.de/newsticker/heise-atom.xml');
-//loader.loadFeed('Golem', 'https://rss.golem.de/rss.php?feed=ATOM1.0');
+loader.loadFeed('heise online', 'https://www.heise.de/newsticker/heise-atom.xml');
+loader.loadFeed('Golem', 'https://rss.golem.de/rss.php?feed=ATOM1.0');
 
 // fill db with example data
 /*for(let source of data.news){
@@ -30,13 +30,9 @@ let loader = new Loader(store);
     })
 }*/
 
-function runload() {
-    loader.loadFeed('Golem', 'https://rss.golem.de/rss.php?feed=ATOM1.0');
-    alert("load")
-}
 
-runload();
-setInterval(runload, 5*60*1000);
+loader.updateFeeds();
+setInterval(loader.updateFeeds, 5*60*1000);
 
 
 

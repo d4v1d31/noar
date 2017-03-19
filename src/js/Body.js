@@ -5,20 +5,27 @@ import * as React from "react";
 import {NewsSourceEntryList} from './NewsSource';
 import {NewsArticleList, NewsArticle} from './NewsArticle';
 import {AddSourceDlg} from './Dialogs';
+import keydown, { Keys } from 'react-keydown';
+const shell = window.require('electron').shell;
 
 export class Body extends React.Component{
     constructor(props) {
         super(props);
 
         this.state = {
-            newsSources:     props.newsSources,
-            currentSource:   props.currentSource,
+            newsSources: props.newsSources,
+            currentSource: props.currentSource,
             currentArticles: props.currentArticles,
-            currentArticle:  props.currentArticle,
+            currentArticle: props.currentArticle,
         };
+
+
         this.handleNewsSourceChange = this.handleNewsSourceChange.bind(this);
         this.loadNewsSource = this.loadNewsSource.bind(this);
         this.handleArticleChange = this.handleArticleChange.bind(this);
+        this.loadNextArticle = this.loadNewsSource.bind(this);
+        this.loadPreviousArticle = this.loadPreviousArticle.bind(this);
+        this.onAddSource = this.onAddSource.bind(this);
     }
 
     handleNewsSourceChange(source){
@@ -34,10 +41,11 @@ export class Body extends React.Component{
                     currentArticles: articles
                 })
             });
+
     }
 
 
-    handleArticleChange(article) {
+    handleArticleChange(article){
         return (e) => {
             article.read = true;
             this.props.store.readNewsArticle(article.id).then(()=>{
@@ -49,10 +57,49 @@ export class Body extends React.Component{
         }
     }
 
+    @keydown( 'right' )
+    loadNextArticle(){
+        let n = this.state.currentArticles.indexOf(this.state.currentArticle);
+        if(n+1 < this.state.currentArticles.length) {
+            let currentArticle = this.state.currentArticles[++n];
+            this.props.store.readNewsArticle(currentArticle.id).then(()=>{
+                currentArticle.read = true;
+                this.setState({currentArticle: currentArticle});
+                //console.log('next');
+            })
+        }
+    }
+
+    @keydown('left')
+    loadPreviousArticle(){
+        let n = this.state.currentArticles.indexOf(this.state.currentArticle);
+        if(n > 0) {
+            let currentArticle = this.state.currentArticles[--n];
+            this.props.store.readNewsArticle(currentArticle.id).then(()=>{
+                currentArticle.read = true;
+                this.setState({currentArticle: currentArticle});
+                //console.log('previous');
+            })
+        }
+
+    }
+
+    onAddSource(e){
+        let title = document.getElementById('source-title').value;
+        let url = document.getElementById('source-url').value;
+        let currentSources = this.state.newsSources;
+        this.props.loader.loadFeed(title, url,
+            (s) => {currentSources.push(s);
+                    this.setState({newsSources: currentSources})}
+        );
+        document.getElementById("addSourceDlg").close();
+    }
+
     render(){
         let article = this.state.currentArticle;
+        //console.log(article.content);
         return (
-        <div className="mdl-layout mdl-js-layout mdl-layout--fixed-drawer">
+        <div onKeyPress={this.state.onKeyPress} className="mdl-layout mdl-js-layout mdl-layout--fixed-drawer">
             <aside className="mdl-layout__drawer">
                 <span className="mdl-layout-title"> Feeds </span>
                 <NewsSourceEntryList entries={this.state.newsSources}
@@ -70,19 +117,17 @@ export class Body extends React.Component{
                         <NewsArticle title={article.title}
                                      summary={article.summary}
                                      img={article.img}
-                                     content={article.content}/>
+                                     content={article.content}
+                                     id={article.id}
+                        />
                     </div>
                 </div>
             </main>
-            <button id="prev-article-btn"
+            <button id="next-article-btn" onClick={(e) => shell.openExternal(this.state.currentArticle.id)}
                     className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
-                <i className="material-icons">navigate_before</i>
+                <i className="material-icons">link</i>
             </button>
-            <button id="next-article-btn"
-                    className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
-                <i className="material-icons">navigate_next</i>
-            </button>
-            <AddSourceDlg loader={this.props.loader}/>
+            <AddSourceDlg onAddSource={this.onAddSource} loader={this.props.loader}/>
         </div>
         )
     }

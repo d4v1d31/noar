@@ -2,9 +2,14 @@
  * Created by david on 09.03.17.
  */
 import * as React from "react";
+let $ = require('jquery');
+
 export class NewsArticle extends React.Component{
     constructor(props) {
         super(props);
+
+
+
     }
 
     render(){
@@ -13,7 +18,14 @@ export class NewsArticle extends React.Component{
             <img src={this.props.img}/>
             <h3>{this.props.title}</h3>
             <strong>{this.props.summary}</strong>
-            <p>{this.props.content}</p>
+            { this.props.content &&
+            this.props.content.map((c)=>{
+                if(c[0] == 'P') {
+                    return <p>{c[1]}</p>
+                } else {
+                    return <h4>{c[1]}</h4>
+                }
+            })}
         </article>
         )
     }
@@ -31,6 +43,7 @@ export class NewsArticleEntry extends React.Component{
     }
 
     render(){
+
         let classes = "mdl-list__item mdl-list__item--three-line";
         if(this.props.hadRead) classes += " read";
         return(
