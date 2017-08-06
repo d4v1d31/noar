@@ -4,6 +4,7 @@
 import React from "react";
 import {NewsSourceEntryList} from './NewsSource';
 import {NewsArticleList, NewsArticle} from './NewsArticle';
+import {Main, SideBar} from './BodyParts';
 import {AddSourceDlg} from './Dialogs';
 import keydown, { Keys } from 'react-keydown';
 const shell = window.require('electron').shell;
@@ -95,35 +96,26 @@ export class Body extends React.Component{
         let article = this.state.currentArticle;
         return (
         <div onKeyPress={this.state.onKeyPress} className="mdl-layout mdl-js-layout mdl-layout--fixed-drawer">
-            <aside className="mdl-layout__drawer">
-                <span className="mdl-layout-title"> Feeds </span>
-                <NewsSourceEntryList entries={this.state.newsSources}
-                                     currentEntry={this.state.currentSource}
-                                     handleNewsSourceChange={this.handleNewsSourceChange}/>
-            </aside>
-            <div className="article-list">
-                <NewsArticleList entries={this.state.currentArticles}
-                                 currentArticle={this.state.currentArticle}
-                                 handleArticleChange={this.handleArticleChange}/>
-            </div>
-            <main className="content">
-                <div className="mdl-grid">
-                    <div className="mdl-cell mdl-cell--12-col">
-                        <NewsArticle title={article.title}
-                                     summary={article.summary}
-                                     img={article.img}
-                                     content={article.content}
-                                     id={article.id}
-                        />
-                    </div>
-                </div>
-            </main>
+
+            <SideBar entries={this.state.newsSources}
+                     currentEntry={this.state.currentSource}
+                     handleNewsSourceChange={this.handleNewsSourceChange}/>
+
+
+            <NewsArticleList entries={this.state.currentArticles}
+                             currentArticle={this.state.currentArticle}
+                             handleArticleChange={this.handleArticleChange}/>
+
+            <Main article={article} />
+
             <button id="next-article-btn" onClick={(e) => shell.openExternal(this.state.currentArticle.id)}
                     className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
                 <i className="material-icons">link</i>
             </button>
             <AddSourceDlg onAddSource={this.onAddSource} loader={this.props.loader}/>
+
         </div>
         )
     }
+
 }

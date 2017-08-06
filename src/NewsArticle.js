@@ -64,7 +64,8 @@ export class NewsArticleList extends React.Component{
     }
     render(){
         return(
-            <ul className="demo-list-three mdl-list">
+            <div className="article-list">
+                <ul className="demo-list-three mdl-list">
                 {this.props.entries.map((entry) =>
                     <NewsArticleEntry key={entry.id}
                                       title={entry.title}
@@ -73,7 +74,8 @@ export class NewsArticleList extends React.Component{
                                       hadRead = {entry.read}
                                       isActive={entry === this.props.currentArticle}
                                       handleArticleChange={this.props.handleArticleChange(entry)}/>)}
-            </ul>
+                </ul>
+            </div>
         )
     }
 }
