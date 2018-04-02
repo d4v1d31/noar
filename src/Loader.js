@@ -4,7 +4,9 @@
 import * as parse5 from 'parse5';
 import * as https from "https";
 import * as http from "http";
-import * as rssParser from "rss-parser";
+import Parser from "rss-parser";
+import {JSDOM} from "jsdom";
+import Readability from "../lib/readability/Readability";
 
 class ParserState{
     static p =  0;
@@ -73,32 +75,36 @@ export class Loader {
 
     loadFeed(title, url , callback){
         let store = this.store;
-        rssParser.parseURL(url, function(err, parsed) {
+        let parser = new Parser();
+        parser.parseURL(url, function(err, parsed) {
 
             console.log(parsed);
             let newsSource = {
                 title: title,
-                feed_title: parsed.feed.title,
+                feed_title: parsed.title,
                 url: url,
-                id: parsed.feed.feedUrl
+                id: parsed.feedUrl
             };
 
             let articles = [];
-            parsed.feed.entries.forEach(function(entry) {
-                articles.push({
-                    title: entry.title,
-                    link: entry.link,
-                    id: entry.id,
-                    updated: entry.pubDate,
-                    summary: entry.contentSnippet,
-                });
-            });
+            parsed.items.forEach(function(entry) {
+                Loader.loadArticleContent(entry.link, (article) => {
+                    articles.push({
+                        title: entry.title,
+                        link: entry.link,
+                        id: entry.id,
+                        updated: entry.pubDate,
+                        summary: entry.contentSnippet,
+                        content: article.content,
+                    });
+                    store.addNewsSource(newsSource).then((id) =>{
+                        for (let article of articles){
+                            article.sourceId = id;
+                            store.addNewsArticle(article);
+                        }
+                    });
 
-            store.addNewsSource(newsSource).then((id) =>{
-                for (let article of articles){
-                    article.sourceId = id;
-                    store.addNewsArticle(article);
-                }
+                })
             });
 
         })
@@ -118,117 +124,20 @@ export class Loader {
 
     static loadArticleContent(url, callback){
 
-        let state = ParserState.idle;
-        let path = [];
-        let content = [];
-        const parser = new parse5.SAXParser();
-        let bad_tags = [
-            "link", "meta", 'br'
-        ];
+        JSDOM.fromURL(url, {})
+            .then(dom => {
+                var uri = {
+                    spec: url,
+                    host: "www.heise.de",
+                    prePath: "https://www.heise.de",
+                    scheme: "https",
+                    pathBase: 'https://www.heise.de/newsticker/meldung/'
+          };
 
-        parser.on("startTag", (name, attr, selfClosing) => {
-            //console.log(attr);
-            let className = this.getClass(attr);
-            if(className !== null) {
-                path.push(name + '[' + className + ']');
-            } else {
-                path.push(name)
-            }
-            switch (state) {
-                case ParserState.idle: {
-                    switch (name) {
-                        case "p"       : if (!selfClosing) state = ParserState.p; break;
-                        case "article" : if (!selfClosing) state = ParserState.article
-                    }
-                    break
-                }
-
-                case ParserState.article: {
-                    switch (name) {
-                        case "p": if (!selfClosing) state = ParserState.article_p;
-                    }
-                    break
-                }
-            }
-            if(selfClosing || (bad_tags.indexOf(name) >=0)){
-                path.pop()
-            }
-
-        });
-
-        parser.on("text", (text) => {
-            switch (state) {
-                case ParserState.p         : if (text.trim() !== '') {
-                    content.push({
-                        path: path.reduce((s1,s2) => s1+'/'+s2),
-                        text: text.trim(),
-                        show: true
-                    });
-
-                } break;
-                case ParserState.article_p : if(text.trim() !== '')  {
-                     content.push({
-                        path: path.reduce((s1,s2) => s1+'/'+s2),
-                        text: text.trim(),
-                        show: true
-                    });
-                }
-            }
-        });
-
-        parser.on("endTag", (name) => {
-            path.pop();
-            switch (state) {
-                case ParserState.p: {
-                    switch (name) {
-                        case "p": state = ParserState.idle;
-                    }
-                    break
-                }
-                case ParserState.article: {
-                    switch (name) {
-                        case "article": state = ParserState.idle;
-                    }
-                    break
-                }
-                case ParserState.article_p: {
-                    switch (name) {
-                        case "p": state = ParserState.article;
-                    }
-
-                }
-            }
-        });
-
-        https.get(url, res => {
-            res.pipe(parser, {end: false});
-            res.on('end', () => callback(null, content));
-
-        });
-
-        /*this.httpGetAsync(url, (chunk) => {
-            console.log(`BODY: ${chunk}`);
-            // Do some parsing
-            // ...
-            let imageUrl = '';
-            let content = 'none content';
-            callback(imageUrl, content);
-
-        });
-
-
-    /*    $.get(id, (data) => {
-
-            data = $($.parseHTML($.trim(data)));
-            let title = data.find("h1").text();
-            let content = [];
-            data.find('p, h2').each(function () { // or "item" or whatever suits your feed
-                let p = $(this);
-                content.push([p.prop("tagName"),p.text()]);
-            });
-            //console.log(content);
-            if(save) save(content);
-        }, 'html');//*/
+           var article = new Readability(uri, dom.window.document).parse();
+           console.log(article);
+           callback(article);
+         });
     }
 
     updateFeeds(){

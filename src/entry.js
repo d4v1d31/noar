@@ -14,60 +14,23 @@ import {Body} from './Body';
 import {DataStorage} from './Storage';
 import {Loader} from "./Loader";
 
-import {JSDOM} from 'jsdom';
-
-
-// var loc = "https://www.heise.de/newsticker/meldung/Duerre-in-Saskatchewan-Stromzaehler-fangen-Feuer-3793755.html";
-
-// JSDOM.fromURL("https://www.heise.de/newsticker/meldung/Duerre-in-Saskatchewan-Stromzaehler-fangen-Feuer-3793755.html", {})
-   // .then(dom => {
-    //   console.log(dom.window.document);
-     //   var uri = {
-    //        spec: "https://www.heise.de/newsticker/meldung/Duerre-in-Saskatchewan-Stromzaehler-fangen-Feuer-3793755.html",
-    //        host: "www.heise.de",
-//      prePath: "https://www.heise.de",
-  //          scheme: "https",
-    //        pathBase: 'https://www.heise.de/newsticker/meldung/'
-      //  };
-
-     //   var article = new Readability(uri, dom.window.document).parse();
-     //   console.log(article);
-   // });
-
-
+console.log("Create DataStorage");
 let store = new DataStorage();
-//Loader.loadArticleContent(
-//    'https://www.heise.de/newsticker/meldung/Duerre-in-Saskatchewan-Stromzaehler-fangen-Feuer-3793755.html',
-//    (img, content) => {
-//        store.addNewsArticle({
-//          'id': 'https://www.heise.de/newsticker/meldung/Duerre-in-Saskatchewan-Stromzaehler-fangen-Feuer-3793755.html',
-      //    'title': 'sometitle',
-    //      'summary': 'sumsum',
-  //        'updated': new Date(),
-//          'content': content,
-//          'sourceId': 'heise.de'
 
-//        }).then((a, b) => {
-//                console.log(a);
-//                console.log(b);
-//                console.log(img);
-//                console.log(content);
-//                console.log(content.length);
-//            }
-//        ).catch(ex => console.log(ex));
-//    });
 
 // create/init storage
+console.log("Create/Load storage");
 let loader = new Loader(store);
 
+console.log("Load data and render body");
 loadData(renderBody);
 
 // load example data
-//loader.loadFeed('heise online', 'https://www.heise.de/newsticker/heise-atom.xml');
+loader.loadFeed('heise online', 'https://www.heise.de/newsticker/heise-atom.xml');
 //loader.loadFeed('Golem', 'http://rss.golem.de/rss.php?feed=ATOM1.0');
 
 
-loader.updateFeeds();
+//loader.updateFeeds();
 //setInterval(loader.updateFeeds, 5*60*1000);
 
 function loadData(callback){

@@ -6,7 +6,7 @@ import Dexie from 'dexie';
 export class DataStorage {
     VERSION = 1;
     constructor(){
-        this.db = new Dexie("noar");
+        this.db = new Dexie("noar16");
 
         this.db.version(this.VERSION).stores({
             articles: 'id, title, summary, updated, content, sourceId, read',
@@ -25,6 +25,7 @@ export class DataStorage {
 
     addNewsArticle(article){
         return this.db.articles.get(article.id, a => {
+            console.log(a);
             if(a) {
                 return this.db.articles.update(a.id, {
                     'id': article.id,
@@ -53,6 +54,7 @@ export class DataStorage {
     }
 
     getNewsSources(){
+        console.log("load newsSources");
         return(this.db.newsSources.toArray());
     }
 

@@ -14,11 +14,7 @@ export class NewsArticle extends React.Component{
             <img src={this.props.img}/>
             <h3>{this.props.title}</h3>
             <strong>{this.props.summary}</strong>
-            { this.props.content &&
-            this.props.content.map((c)=> {
-                return <p>{c.text}</p>
-
-            })}
+            <div dangerouslySetInnerHTML={{__html: this.props.content }} />
         </article>
         )
     }
