@@ -6,15 +6,26 @@ import * as https from "https";
 import * as http from "http";
 import * as rssParser from "rss-parser";
 
+class ParserState{
+    static p =  0;
+    static img = 1;
+    static article = 2;
+    static article_p = 3;
+    static article_footer = 4;
+    static idle = 5;
+
+}
+
 export class Loader {
 
     constructor(store){
         this.store = store;
         this.updateFeeds = this.updateFeeds.bind(this);
-        this.loadArticleContent = this.loadArticleContent.bind(this);
+//        this.loadArticleContent = this.loadArticleContent.bind(this);
+//        this.httpGetAsync = this.httpGetAsync.bind(this)
     }
 
-    httpGetAsync(theUrl, callback) {
+    static httpGetAsync(theUrl, callback) {
         let parser = document.createElement('a');
         parser.href = theUrl;
         console.log({
@@ -52,9 +63,7 @@ export class Loader {
                 console.log(`ERROR: ${JSON.stringify(error)}`)
             });
 
-            response.on('data', (chunk) => {
-                console.log(`BODY: ${chunk}`);
-            });
+            response.on('finish', callback);
         });
 
         request.end();
@@ -95,9 +104,118 @@ export class Loader {
         })
     }
 
-    loadArticleContent(id, callback){
+    static getClass(attr){
+        for (let a in attr){
+            if(attr[a].hasOwnProperty('name') &&
+               attr[a].hasOwnProperty('value') &&
+               attr[a].name === 'class'){
 
-        return "Some Content";
+                return attr[a].value.trim()
+            }
+        }
+        return null
+    }
+
+    static loadArticleContent(url, callback){
+
+        let state = ParserState.idle;
+        let path = [];
+        let content = [];
+        const parser = new parse5.SAXParser();
+        let bad_tags = [
+            "link", "meta", 'br'
+        ];
+
+        parser.on("startTag", (name, attr, selfClosing) => {
+            //console.log(attr);
+            let className = this.getClass(attr);
+            if(className !== null) {
+                path.push(name + '[' + className + ']');
+            } else {
+                path.push(name)
+            }
+            switch (state) {
+                case ParserState.idle: {
+                    switch (name) {
+                        case "p"       : if (!selfClosing) state = ParserState.p; break;
+                        case "article" : if (!selfClosing) state = ParserState.article
+                    }
+                    break
+                }
+
+                case ParserState.article: {
+                    switch (name) {
+                        case "p": if (!selfClosing) state = ParserState.article_p;
+                    }
+                    break
+                }
+            }
+            if(selfClosing || (bad_tags.indexOf(name) >=0)){
+                path.pop()
+            }
+
+        });
+
+        parser.on("text", (text) => {
+            switch (state) {
+                case ParserState.p         : if (text.trim() !== '') {
+                    content.push({
+                        path: path.reduce((s1,s2) => s1+'/'+s2),
+                        text: text.trim(),
+                        show: true
+                    });
+
+                } break;
+                case ParserState.article_p : if(text.trim() !== '')  {
+                     content.push({
+                        path: path.reduce((s1,s2) => s1+'/'+s2),
+                        text: text.trim(),
+                        show: true
+                    });
+                }
+            }
+        });
+
+        parser.on("endTag", (name) => {
+            path.pop();
+            switch (state) {
+                case ParserState.p: {
+                    switch (name) {
+                        case "p": state = ParserState.idle;
+                    }
+                    break
+                }
+                case ParserState.article: {
+                    switch (name) {
+                        case "article": state = ParserState.idle;
+                    }
+                    break
+                }
+                case ParserState.article_p: {
+                    switch (name) {
+                        case "p": state = ParserState.article;
+                    }
+
+                }
+            }
+        });
+
+        https.get(url, res => {
+            res.pipe(parser, {end: false});
+            res.on('end', () => callback(null, content));
+
+        });
+
+        /*this.httpGetAsync(url, (chunk) => {
+            console.log(`BODY: ${chunk}`);
+            // Do some parsing
+            // ...
+            let imageUrl = '';
+            let content = 'none content';
+            callback(imageUrl, content);
+
+        });
+
 
     /*    $.get(id, (data) => {
 

@@ -60,11 +60,5 @@ export class DataStorage {
         return(this.db.articles.where('sourceId').equals(sourceId).reverse().sortBy('updated'))
     }
 
-    sourcesEmpty(){
-        console.log(this.db.newsSources.count());
-        return this.db.newsSources.count();
-    }
-
-
 }
 

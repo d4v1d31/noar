@@ -15,12 +15,9 @@ export class NewsArticle extends React.Component{
             <h3>{this.props.title}</h3>
             <strong>{this.props.summary}</strong>
             { this.props.content &&
-            this.props.content.map((c)=>{
-                if(c[0] == 'P') {
-                    return <p>{c[1]}</p>
-                } else {
-                    return <h4>{c[1]}</h4>
-                }
+            this.props.content.map((c)=> {
+                return <p>{c.text}</p>
+
             })}
         </article>
         )
