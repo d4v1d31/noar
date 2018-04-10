@@ -3,9 +3,14 @@ import {NewsArticleList, NewsArticle} from './NewsArticle';
 import {NewsSourceEntryList} from "./NewsSource"
 
 export class Main extends React.Component {
-    constructor(props){
+    constructor(props) {
         super(props);
     }
+
+    addSource(source_name, e){
+        this.props.addSource(source_name, e)
+    }
+
     render() {
 
         let content;
@@ -19,7 +24,16 @@ export class Main extends React.Component {
                                                                 id={this.props.article.id}/>
 
         } else {
-            content = <h2>Willkommen...</h2>
+            content = <div>
+                        <h2>Willkommen...</h2>
+                        Es sind noch keine News Feed abonniert. Folgende können wir dir empfehlen:
+                        <button onClick={this.addSource.bind(this, "heise")}>
+                            Heise
+                        </button>
+                        <button onClick={this.addSource.bind(this, "golem")}>
+                            Golem
+                        </button>
+                      </div>
         }
 
 

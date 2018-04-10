@@ -37,6 +37,7 @@ export class NewsSourceEntryList extends React.Component {
 
 
     render() {
+        console.log(this.props.entries);
         return (
             <nav id="navigation" className="mdl-navigation">
                 {this.props.entries.map((entry) =>

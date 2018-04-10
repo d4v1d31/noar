@@ -26,6 +26,7 @@ export class Body extends React.Component{
         this.loadNextArticle = this.loadNewsSource.bind(this);
         this.loadPreviousArticle = this.loadPreviousArticle.bind(this);
         this.onAddSource = this.onAddSource.bind(this);
+        this.addSource = this.addSource.bind(this);
     }
 
     handleNewsSourceChange(source){
@@ -92,6 +93,19 @@ export class Body extends React.Component{
         document.getElementById("addSourceDlg").close();
     }
 
+    addSource(source_name, e){
+        this.setState({newsSources: [], currentArticle: []});
+        if(source_name === "heise") {
+            console.log("add heise");
+            this.props.loader.loadFeed('heise online', 'https://www.heise.de/newsticker/heise-atom.xml',
+                this
+            );
+        } else if(source_name === "golem") {
+            this.props.loader.loadFeed('Golem', 'http://rss.golem.de/rss.php?feed=ATOM1.0',
+                this);
+        }
+    }
+
     render(){
         let article = this.state.currentArticle;
         return (
@@ -106,7 +120,7 @@ export class Body extends React.Component{
                              currentArticle={this.state.currentArticle}
                              handleArticleChange={this.handleArticleChange}/>
 
-            <Main article={article} />
+            <Main article={article} addSource={this.addSource} />
 
             <button id="next-article-btn" onClick={(e) => shell.openExternal(this.state.currentArticle.id)}
                     className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">

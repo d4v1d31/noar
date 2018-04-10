@@ -73,10 +73,10 @@ export class Loader {
 
     }
 
-    loadFeed(title, url , callback){
+    loadFeed(title, url , body){
         let store = this.store;
         let parser = new Parser();
-        parser.parseURL(url, function(err, parsed) {
+        parser.parseURL(url, async function (err, parsed) {
 
             console.log(parsed);
             let newsSource = {
@@ -86,26 +86,63 @@ export class Loader {
                 id: parsed.feedUrl
             };
 
-            let articles = [];
-            parsed.items.forEach(function(entry) {
-                Loader.loadArticleContent(entry.link, (article) => {
-                    articles.push({
-                        title: entry.title,
-                        link: entry.link,
-                        id: entry.id,
-                        updated: entry.pubDate,
-                        summary: entry.contentSnippet,
-                        content: article.content,
-                    });
-                    store.addNewsSource(newsSource).then((id) =>{
-                        for (let article of articles){
-                            article.sourceId = id;
-                            store.addNewsArticle(article);
-                        }
-                    });
+            // add News Source to Database
+            let source_id = await store.addNewsSource(newsSource);
+            console.log(source_id);
+            console.log(newsSource);
+            let newsSources = body.props.newsSources;
+            console.log(newsSources);
+            if (newsSources === undefined) {
+                newsSources = [];
+                newsSources.push(newsSource);
 
-                })
-            });
+            } else {
+                newsSources.push(newsSource);
+            }
+            body.setState({newsSources: newsSources});
+
+            let articles = [];
+            parsed.items.forEach(async function (entry) {
+
+                // load article content
+                let content = await Loader.loadArticleContent(entry.link);
+                console.log(content);
+                let article = {
+                    title: entry.title,
+                    link: entry.link,
+                    id: entry.id,
+                    updated: entry.pubDate,
+                    summary: entry.contentSnippet,
+                    content: content,
+                    sourceid: source_id
+                };
+
+
+                articles.push(article);
+
+                // update view
+                body.setState({currentArticles: articles});
+
+                // save article to db
+                store.addNewsArticle(article)
+
+            })
+            /*                store.addNewsSource(newsSource).then((id) => {
+                                let newsSources = body.state.newsSources;
+                                console.log(body.state.newsSources);
+                                newsSources.push(newsSource);
+                                body.setState({newsSources: newsSources});
+                                for (let article of articles) {
+                                    article.sourceId = id;
+                                    store.addNewsArticle(article).then(() => {
+                                        let currentArticles = body.state.currentArticles;
+                                        currentArticles.push(article);
+                                        body.setState({currentArticle: currentArticles});
+                                    });
+                                }
+                            });
+            */
+
 
         })
     }
@@ -122,23 +159,22 @@ export class Loader {
         return null
     }
 
-    static loadArticleContent(url, callback){
+    static loadArticleContent(url) {
+        return new Promise(async (resolve, reject) => {
+            let dom = await JSDOM.fromURL(url, {});
+            let uri = {
+                spec: url,
+                host: "www.heise.de",
+                prePath: "https://www.heise.de",
+                scheme: "https",
+                pathBase: 'https://www.heise.de/newsticker/meldung/'
+            };
+            let article = await new Readability(uri, dom.window.document).parse();
+            resolve(article.content);
 
-        JSDOM.fromURL(url, {})
-            .then(dom => {
-                var uri = {
-                    spec: url,
-                    host: "www.heise.de",
-                    prePath: "https://www.heise.de",
-                    scheme: "https",
-                    pathBase: 'https://www.heise.de/newsticker/meldung/'
-          };
-
-           var article = new Readability(uri, dom.window.document).parse();
-           console.log(article);
-           callback(article);
-         });
+        });
     }
+
 
     updateFeeds(){
         this.store.getNewsSources().then(

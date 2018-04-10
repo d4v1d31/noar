@@ -26,7 +26,7 @@ console.log("Load data and render body");
 loadData(renderBody);
 
 // load example data
-loader.loadFeed('heise online', 'https://www.heise.de/newsticker/heise-atom.xml');
+//loader.loadFeed('heise online', 'https://www.heise.de/newsticker/heise-atom.xml');
 //loader.loadFeed('Golem', 'http://rss.golem.de/rss.php?feed=ATOM1.0');
 
 
