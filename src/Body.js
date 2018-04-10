@@ -87,11 +87,7 @@ export class Body extends React.Component{
     onAddSource(e){
         let title = document.getElementById('source-title').value;
         let url = document.getElementById('source-url').value;
-        let currentSources = this.state.newsSources;
-        this.props.loader.loadFeed(title, url,
-            (s) => {currentSources.push(s);
-                    this.setState({newsSources: currentSources})}
-        );
+        this.props.loader.loadFeed(title, url, this);
         document.getElementById("addSourceDlg").close();
     }
 
