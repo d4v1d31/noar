@@ -6,7 +6,7 @@ import Dexie from 'dexie';
 export class DataStorage {
     VERSION = 1;
     constructor(){
-        this.db = new Dexie("noar7");
+        this.db = new Dexie("noar8");
 
         this.db.version(this.VERSION).stores({
             articles: 'id, title, summary, updated, content, sourceId, read',
@@ -15,18 +15,27 @@ export class DataStorage {
     }
 
     addNewsSource(source){
-        return this.db.newsSources.put({
-            'id': source.id,
-            'title': source.title,
-            'feed_title': source.feed_title,
-            'url': source.url
-        })
+        return  this.db.newsSources.get(source.id, s  => {
+            console.log(s);
+            if  (s === undefined) {
+                return this.db.newsSources.put({
+                    'id': source.id,
+                    'title': source.title,
+                    'feed_title': source.feed_title,
+                    'url': source.url
+                })
+            } else  {
+                return  this.db.newsSources.update(s.id, {
+                    'feed_title': source.feed_title
+                })
+            }
+        });
+
     }
 
     addNewsArticle(article){
         return this.db.articles.get(article.id, a => {
-            console.log(a);
-            if(a) {
+            if(a !== undefined) {
                 return this.db.articles.update(a.id, {
                     'id': article.id,
                     'title': article.title,
@@ -51,6 +60,10 @@ export class DataStorage {
 
     readNewsArticle(id){
         return this.db.articles.update(id, {read: true});
+    }
+
+    existsArticle(article_id){
+        return(this.db.articles.get(article_id))
     }
 
     getNewsSources(){

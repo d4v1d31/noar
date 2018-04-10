@@ -23,6 +23,7 @@ export class Loader {
     constructor(store){
         this.store = store;
         this.updateFeeds = this.updateFeeds.bind(this);
+        this.updateFeed = this.updateFeed.bind(this);
 //        this.loadArticleContent = this.loadArticleContent.bind(this);
 //        this.httpGetAsync = this.httpGetAsync.bind(this)
     }
@@ -78,7 +79,7 @@ export class Loader {
         let parser = new Parser();
         parser.parseURL(url, async function (err, parsed) {
 
-            console.log(parsed);
+            //console.log(parsed);
             let newsSource = {
                 title: title,
                 feed_title: parsed.title,
@@ -88,10 +89,10 @@ export class Loader {
 
             // add News Source to Database
             let source_id = await store.addNewsSource(newsSource);
-            console.log(source_id);
-            console.log(newsSource);
+            //console.log(source_id);
+            //console.log(newsSource);
             let newsSources = body.props.newsSources;
-            console.log(newsSources);
+            //console.log(newsSources);
             if (newsSources === undefined) {
                 newsSources = [];
                 newsSources.push(newsSource);
@@ -108,7 +109,7 @@ export class Loader {
 
                 // load article content
                 let content = await Loader.loadArticleContent(entry.link);
-                console.log(content);
+                //console.log(content);
                 let article = {
                     title: entry.title,
                     link: entry.link,
@@ -131,25 +132,7 @@ export class Loader {
                 } catch (e) {
                     console.error(e);
                 }
-
             })
-            /*                store.addNewsSource(newsSource).then((id) => {
-                                let newsSources = body.state.newsSources;
-                                console.log(body.state.newsSources);
-                                newsSources.push(newsSource);
-                                body.setState({newsSources: newsSources});
-                                for (let article of articles) {
-                                    article.sourceId = id;
-                                    store.addNewsArticle(article).then(() => {
-                                        let currentArticles = body.state.currentArticles;
-                                        currentArticles.push(article);
-                                        body.setState({currentArticle: currentArticles});
-                                    });
-                                }
-                            });
-            */
-
-
         })
     }
 
@@ -182,11 +165,51 @@ export class Loader {
     }
 
 
-    updateFeeds(){
-        this.store.getNewsSources().then(
-            (sources) => {
-                sources.map((s) => this.loadFeed(s.title, s.url))
-            });
+    async updateFeed(source){
+        let parser = new Parser();
+        let store = this.store;
+        let feed = await parser.parseURL(source.url);
+        source = {
+            feed_title: feed.title,
+            id: feed.feedUrl,
+        };
+
+        store.addNewsSource(source);
+
+        feed.items.forEach(async function (entry) {
+            let content = await Loader.loadArticleContent(entry.link);
+            let article = {
+                title: entry.title,
+                link: entry.link,
+                id: entry.id,
+                updated: entry.pubDate,
+                summary: entry.contentSnippet,
+                content: content,
+                sourceId: source.id,
+            };
+
+            try {
+                store.addNewsArticle(article);
+            } catch (e) {
+                console.error(e);
+
+            }
+        })
+    }
+
+    async updateFeeds(){
+        let sources = await this.store.getNewsSources();
+        let updateFeed = this.updateFeed;
+        sources.map((s) => {
+                try {
+                    updateFeed(s);
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+
+        );
+
         console.log("Feeds updated...");
     }
 

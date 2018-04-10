@@ -1,11 +1,6 @@
 /**
  * Created by david on 08.03.17.
  */
-import {WelcomeScreen} from "./BodyParts";
-
-require('../node_modules/material-design-lite/material.js');
-import Readability from '../lib/readability/Readability';
-
 
 'use strict';
 import ReactDOM from 'react-dom';
@@ -13,6 +8,8 @@ import React from 'react';
 import {Body} from './Body';
 import {DataStorage} from './Storage';
 import {Loader} from "./Loader";
+//import Worker from "workerjs";
+require('../node_modules/material-design-lite/material.js');
 
 console.log("Create DataStorage");
 let store = new DataStorage();
@@ -25,13 +22,24 @@ let loader = new Loader(store);
 console.log("Load data and render body");
 loadData(renderBody);
 
-// load example data
-//loader.loadFeed('heise online', 'https://www.heise.de/newsticker/heise-atom.xml');
-//loader.loadFeed('Golem', 'http://rss.golem.de/rss.php?feed=ATOM1.0');
+/*let worker = new Worker('/home/david/Playground/Noar/src/Worker.js', true);
+
+worker.onmessage = (e) =>{
+    console.log(e)
+};
+*/
 
 
-//loader.updateFeeds();
-//setInterval(loader.updateFeeds, 5*60*1000);
+function updateContent(){
+    try {
+        loader.updateFeeds().then((d) => console.log("Updated!"));
+    } catch (e) {
+        console.log(e);
+    }
+    setTimeout(updateContent, 5*60*1000);
+}
+
+updateContent();
 
 function loadData(callback){
 

@@ -1,8 +1,6 @@
 const {app, BrowserWindow} = require('electron');
 const path = require('path');
 const url = require('url');
-import { Loader } from './Loader';
-import { DataStorage } from "./Storage";
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -10,10 +8,8 @@ let win;
 
 function createWindow () {
 
-
     // Create the browser window.
     win = new BrowserWindow({width: 900, height: 600});
-
 
     // and load the index.html of the app.
     //noinspection JSUnresolvedFunction
