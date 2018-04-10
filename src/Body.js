@@ -36,6 +36,8 @@ export class Body extends React.Component{
     loadNewsSource(source) {
         this.props.store.getArticles(source.id).then(
             (articles) => {
+                console.log(articles);
+                console.log(source.id);
                 this.setState({
                     currentSource: source,
                     currentArticle: articles[0],

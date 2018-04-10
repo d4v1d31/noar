@@ -99,7 +99,9 @@ export class Loader {
             } else {
                 newsSources.push(newsSource);
             }
-            body.setState({newsSources: newsSources});
+            body.setState({ newsSources: newsSources,
+                            currentSource: newsSource,
+            });
 
             let articles = [];
             parsed.items.forEach(async function (entry) {
@@ -114,7 +116,7 @@ export class Loader {
                     updated: entry.pubDate,
                     summary: entry.contentSnippet,
                     content: content,
-                    sourceid: source_id
+                    sourceId: source_id
                 };
 
 
@@ -124,7 +126,11 @@ export class Loader {
                 body.setState({currentArticles: articles});
 
                 // save article to db
-                store.addNewsArticle(article)
+                try {
+                    store.addNewsArticle(article)
+                } catch (e) {
+                    console.error(e);
+                }
 
             })
             /*                store.addNewsSource(newsSource).then((id) => {

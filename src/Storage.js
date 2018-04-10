@@ -6,7 +6,7 @@ import Dexie from 'dexie';
 export class DataStorage {
     VERSION = 1;
     constructor(){
-        this.db = new Dexie("noar4");
+        this.db = new Dexie("noar6");
 
         this.db.version(this.VERSION).stores({
             articles: 'id, title, summary, updated, content, sourceId, read',
